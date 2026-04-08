@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>个人生词本</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #666666;
+      --line: #ebebeb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      padding: clamp(16px, 4vw, 30px);
+    }
+
+    .page {
+      width: min(920px, 100%);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(22px, 2.8vw, 30px);
+      font-weight: 600;
+    }
+
+    .top-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .speech-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      font-size: 12px;
+      color: #333333;
+    }
+
+    .mode-switch {
+      position: relative;
+      width: 42px;
+      height: 22px;
+      display: inline-block;
+    }
+
+    .mode-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .mode-slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #d9d9d9;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .mode-slider::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 2px;
+      top: 2px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: transform 0.2s ease;
+    }
+
+    .mode-switch input:checked + .mode-slider {
+      background: #111111;
+    }
+
+    .mode-switch input:checked + .mode-slider::before {
+      transform: translateX(20px);
+    }
+
+    .speech-toggle input:disabled + .mode-slider {
+      background: #cfcfcf;
+      cursor: not-allowed;
+    }
+
+    .speech-toggle input:disabled ~ span {
+      opacity: 0.6;
+    }
+
+    .top-btn {
+      appearance: none;
+      border: 1.2px solid #111111;
+      background: #ffffff;
+      color: #111111;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: 1px solid #111111;
+      background: #ffffff;
+      color: #111111;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .list {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .item {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      background: #fff;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .word-btn {
+      appearance: none;
+      border: 0.8px solid #111111;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .word-btn.mastered {
+      color: #9a9a9a;
+      border-color: #c9c9c9;
+      text-decoration: line-through;
+    }
+
+    .master-btn {
+      appearance: none;
+      border: 1px solid #111111;
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .detail {
+      display: none;
+      margin-top: 8px;
+    }
+
+    .detail.show {
+      display: block;
+    }
+
+    .meaning {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #333333;
+    }
+
+    .detail-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .detail-btn,
+    .dict-link-btn {
+      appearance: none;
+      border: 1px solid #111111;
+      background: transparent;
+      color: #111111;
+      border-radius: 999px;
+      padding: 4px 10px;
+      min-height: 32px;
+      font-size: 12px;
+      line-height: 1.2;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .detail-btn:hover,
+    .dict-link-btn:hover {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+    }
+
+    .tiny-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 36px;
+      transform: translateX(-50%);
+      background: rgba(17, 17, 17, 0.92);
+      color: #fff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .tiny-toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <h1 class="title">个人生词本</h1>
+      <div class="top-actions">
+        <label class="speech-toggle" for="speechToggle">
+          <span>自动朗读</span>
+          <span class="mode-switch">
+            <input id="speechToggle" type="checkbox" />
+            <span class="mode-slider"></span>
+          </span>
+        </label>
+        <button id="backBtn" class="top-btn" type="button">返回主页</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button id="tabLearning" class="tab-btn active" type="button">学习中</button>
+      <button id="tabMastered" class="tab-btn" type="button">已掌握</button>
+    </div>
+    <div id="listWrap"></div>
+  </main>
+  <footer style="margin-top: 20px; text-align: center; color: #666666; font-size: 12px;">
+    鄂ICP备2026012973号-1
+  </footer>
+  <div id="tinyToast" class="tiny-toast" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://ymfjakkkqmpsobdwtxfo.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_XHPUZynTsndoCrXlL2Izrw_7_W6tg18";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const listWrap = document.getElementById("listWrap");
+    const backBtn = document.getElementById("backBtn");
+    const tabLearning = document.getElementById("tabLearning");
+    const tabMastered = document.getElementById("tabMastered");
+    const speechToggle = document.getElementById("speechToggle");
+    const tinyToast = document.getElementById("tinyToast");
+    let toastTimer = null;
+    let currentTab = "learning";
+    const SPEECH_AUTO_PLAY_KEY = "flashword_auto_speech";
+    const hasSpeechSynthesis =
+      typeof window !== "undefined" &&
+      "speechSynthesis" in window &&
+      typeof window.SpeechSynthesisUtterance === "function";
+    let isSpeechAutoEnabled = false;
+    let currentUserCache = null;
+    let wordsCache = {
+      learning: [],
+      mastered: []
+    };
+    let cacheReady = false;
+    let wordsFetchPromise = null;
+    let lastWordsFetchedAt = 0;
+
+    function showTinyToast(message) {
+      tinyToast.textContent = message;
+      tinyToast.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => tinyToast.classList.remove("show"), 1200);
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function speakWord(word) {
+      if (!hasSpeechSynthesis || !word) return;
+      try {
+        const utterance = new window.SpeechSynthesisUtterance(String(word));
+        utterance.lang = "en-US";
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      } catch (_error) {
+        // 浏览器不支持或策略拦截时静默失败。
+      }
+    }
+
+    function initSpeechToggle() {
+      if (!speechToggle) return;
+      if (!hasSpeechSynthesis) {
+        speechToggle.checked = false;
+        speechToggle.disabled = true;
+        speechToggle.title = "当前浏览器不支持自动朗读";
+        return;
+      }
+      isSpeechAutoEnabled = localStorage.getItem(SPEECH_AUTO_PLAY_KEY) === "1";
+      speechToggle.checked = isSpeechAutoEnabled;
+      speechToggle.addEventListener("change", () => {
+        isSpeechAutoEnabled = speechToggle.checked;
+        localStorage.setItem(SPEECH_AUTO_PLAY_KEY, isSpeechAutoEnabled ? "1" : "0");
+      });
+    }
+
+    async function getCurrentUser() {
+      if (currentUserCache) return currentUserCache;
+      const result = await supabaseClient.auth.getSession();
+      currentUserCache = result?.data?.session?.user || null;
+      return currentUserCache;
+    }
+
+    async function bootstrapSessionFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const accessToken = params.get("at");
+      const refreshToken = params.get("rt");
+      if (!accessToken || !refreshToken) return;
+
+      const result = await supabaseClient.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+      if (result.error) {
+        console.error("恢复会话失败：", result.error);
+      }
+      window.history.replaceState({}, "", "./notebook.html");
+    }
+
+    async function markMastered(rowId) {
+      const updateResult = await supabaseClient
+        .from("user_words")
+        .update({ status: "mastered" })
+        .eq("id", rowId);
+      if (!updateResult.error) return true;
+
+      const deleteResult = await supabaseClient
+        .from("user_words")
+        .delete()
+        .eq("id", rowId);
+      return !deleteResult.error;
+    }
+
+    async function restoreToLearning(rowId) {
+      const updateResult = await supabaseClient
+        .from("user_words")
+        .update({ status: "learning" })
+        .eq("id", rowId);
+      return !updateResult.error;
+    }
+
+    function renderEmpty() {
+      listWrap.innerHTML = '<div class="empty">暂无生词，快去吞噬新单词吧！</div>';
+    }
+
+    function renderNeedLogin() {
+      listWrap.innerHTML =
+        '<div class="empty">' +
+          "请先登录后查看个人生词本。" +
+          '<div style="margin-top:10px;">' +
+            '<button id="goLoginBtn" class="top-btn" type="button">去首页登录</button>' +
+          "</div>" +
+        "</div>";
+      const goLoginBtn = document.getElementById("goLoginBtn");
+      if (goLoginBtn) {
+        goLoginBtn.addEventListener("click", () => {
+          window.location.href = "./index.html";
+        });
+      }
+    }
+
+    function setActiveTab(tab) {
+      currentTab = tab;
+      tabLearning.classList.toggle("active", tab === "learning");
+      tabMastered.classList.toggle("active", tab === "mastered");
+    }
+
+    function renderLoading() {
+      listWrap.innerHTML = '<div class="loading">正在同步生词本，请稍候...</div>';
+    }
+
+    function normalizeStatus(status) {
+      const key = String(status || "").toLowerCase();
+      if (key === "mastered") return "mastered";
+      if (key === "learning" || key === "in_notebook" || key === "notebook") return "learning";
+      return "";
+    }
+
+    function rebuildWordsCache(rows) {
+      const nextCache = { learning: [], mastered: [] };
+      (rows || []).forEach((row) => {
+        const normalized = normalizeStatus(row.status);
+        if (!normalized) return;
+        nextCache[normalized].push(row);
+      });
+      wordsCache = nextCache;
+      cacheReady = true;
+    }
+
+    function renderRows(tab, rows) {
+      if (!rows.length) {
+        renderEmpty();
+        return;
+      }
+
+      listWrap.innerHTML =
+        '<div class="list">' +
+        rows
+          .map(
+            (row) =>
+              '<div class="item" data-id="' + row.id + '" data-word="' + escapeHTML(row.word || "") + '">' +
+                '<div class="row">' +
+                  '<button class="word-btn' + (tab === "mastered" ? " mastered" : "") + '" type="button">' + escapeHTML(row.word) + "</button>" +
+                  (tab === "learning"
+                    ? '<button class="master-btn" type="button">✅ 我学会了</button>'
+                    : '<button class="master-btn" type="button">↺ 捞回</button>') +
+                "</div>" +
+                '<div class="detail">' +
+                  '<div class="meaning">' + escapeHTML(row.meaning || "") + "</div>" +
+                  '<div class="detail-actions">' +
+                    '<button class="detail-btn speak-btn" type="button">🔊 朗读</button>' +
+                    '<a class="dict-link-btn" href="https://dictionary.cambridge.org/dictionary/english/' + encodeURIComponent(String(row.word || "")) + '" target="_blank" rel="noopener noreferrer">📘 剑桥词典</a>' +
+                    '<a class="dict-link-btn" href="https://www.youdao.com/w/' + encodeURIComponent(String(row.word || "")) + '" target="_blank" rel="noopener noreferrer">📗 有道词典</a>' +
+                  "</div>" +
+                "</div>" +
+              "</div>"
+          )
+          .join("") +
+        "</div>";
+
+      listWrap.querySelectorAll(".item").forEach((item) => {
+        const wordBtn = item.querySelector(".word-btn");
+        const masterBtn = item.querySelector(".master-btn");
+        const detailEl = item.querySelector(".detail");
+        const speakBtn = item.querySelector(".speak-btn");
+        const rowId = String(item.dataset.id || "");
+        const rowWord = String(item.dataset.word || "").trim();
+
+        wordBtn.addEventListener("click", () => {
+          detailEl.classList.toggle("show");
+          if (detailEl.classList.contains("show") && isSpeechAutoEnabled) {
+            speakWord(rowWord);
+          }
+        });
+        speakBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          speakWord(rowWord);
+        });
+
+        if (tab === "learning") {
+          masterBtn.addEventListener("click", async () => {
+            masterBtn.disabled = true;
+            const source = wordsCache.learning.slice();
+            const target = wordsCache.mastered.slice();
+            const idx = source.findIndex((row) => String(row.id) === rowId);
+            if (idx >= 0) {
+              const moved = source[idx];
+              wordsCache.learning = source.filter((row) => String(row.id) !== rowId);
+              wordsCache.mastered = [{ ...moved, status: "mastered" }, ...target];
+              renderRows(currentTab, wordsCache[currentTab] || []);
+            }
+            const ok = await markMastered(rowId);
+            if (!ok) {
+              wordsCache.learning = source;
+              wordsCache.mastered = target;
+              renderRows(currentTab, wordsCache[currentTab] || []);
+              alert("更新失败，请稍后重试。");
+              return;
+            }
+            showTinyToast("已标记为学会");
+          });
+        } else {
+          masterBtn.addEventListener("click", async () => {
+            masterBtn.disabled = true;
+            const source = wordsCache.mastered.slice();
+            const target = wordsCache.learning.slice();
+            const idx = source.findIndex((row) => String(row.id) === rowId);
+            if (idx >= 0) {
+              const moved = source[idx];
+              wordsCache.mastered = source.filter((row) => String(row.id) !== rowId);
+              wordsCache.learning = [{ ...moved, status: "learning" }, ...target];
+              renderRows(currentTab, wordsCache[currentTab] || []);
+            }
+            const ok = await restoreToLearning(rowId);
+            if (!ok) {
+              wordsCache.mastered = source;
+              wordsCache.learning = target;
+              renderRows(currentTab, wordsCache[currentTab] || []);
+              alert("更新失败，请稍后重试。");
+              return;
+            }
+            showTinyToast("单词已重新加入生词本");
+          });
+        }
+      });
+    }
+
+    function renderCurrentTabFromCache() {
+      if (!cacheReady) return false;
+      const rows = wordsCache[currentTab] || [];
+      renderRows(currentTab, rows);
+      return true;
+    }
+
+    async function fetchAllWords(userId) {
+      if (wordsFetchPromise) return wordsFetchPromise;
+      wordsFetchPromise = supabaseClient
+        .from("user_words")
+        .select("id, word, meaning, status")
+        .eq("user_id", userId)
+        .in("status", ["learning", "mastered", "in_notebook", "notebook"])
+        .order("id", { ascending: false })
+        .then((result) => {
+          if (result.error) throw result.error;
+          rebuildWordsCache(result.data || []);
+          lastWordsFetchedAt = Date.now();
+          return wordsCache;
+        })
+        .finally(() => {
+          wordsFetchPromise = null;
+        });
+      return wordsFetchPromise;
+    }
+
+    async function loadWordsByStatus(options = {}) {
+      const { forceRefresh = false, skipLoadingUI = false } = options;
+      const user = await getCurrentUser();
+      if (!user) {
+        renderNeedLogin();
+        return;
+      }
+
+      if (!forceRefresh && renderCurrentTabFromCache()) {
+        const cacheAge = Date.now() - lastWordsFetchedAt;
+        if (cacheAge < 8000) return;
+      } else if (!skipLoadingUI && !cacheReady) {
+        renderLoading();
+      }
+
+      try {
+        await fetchAllWords(user.id);
+        renderCurrentTabFromCache();
+      } catch (error) {
+        console.error("读取生词本失败：", error);
+        if (!cacheReady) {
+          renderEmpty();
+        }
+      }
+    }
+
+    backBtn.addEventListener("click", () => {
+      // 优先使用历史返回，命中 bfcache 时可直接恢复主页状态，避免冷重载。
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = "./index.html";
+    });
+    tabLearning.addEventListener("click", () => {
+      if (currentTab === "learning") return;
+      setActiveTab("learning");
+      if (!renderCurrentTabFromCache()) {
+        renderLoading();
+      }
+      loadWordsByStatus({ skipLoadingUI: true });
+    });
+    tabMastered.addEventListener("click", () => {
+      if (currentTab === "mastered") return;
+      setActiveTab("mastered");
+      if (!renderCurrentTabFromCache()) {
+        renderLoading();
+      }
+      loadWordsByStatus({ skipLoadingUI: true });
+    });
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if ((event === "SIGNED_OUT" || event === "USER_DELETED") && !session?.user) {
+        currentUserCache = null;
+        cacheReady = false;
+        wordsCache = { learning: [], mastered: [] };
+        renderNeedLogin();
+      }
+    });
+
+    (async () => {
+      initSpeechToggle();
+      await bootstrapSessionFromQuery();
+      await loadWordsByStatus({ forceRefresh: true });
+    })();
+  </script>
+</body>
+</html>
